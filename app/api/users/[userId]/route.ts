@@ -50,8 +50,19 @@ export async function GET(
     }
 
     if (userError || !userData) {
+      // 디버깅 정보 로깅
+      console.error("GET /api/users/[userId] - User not found:", {
+        userId,
+        errorById: errorById?.message,
+        errorByClerkId: userError?.message,
+        userError: userError?.code,
+      });
+
       return NextResponse.json(
-        { error: "사용자를 찾을 수 없습니다." },
+        { 
+          error: "사용자를 찾을 수 없습니다.",
+          details: "Supabase users 테이블에 사용자가 없거나 동기화되지 않았을 수 있습니다."
+        },
         { status: 404 }
       );
     }
