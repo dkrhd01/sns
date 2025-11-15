@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { PostCard } from "./PostCard";
 import { PostCardSkeleton } from "./PostCardSkeleton";
 import type { PostWithDetails, CommentWithUser } from "@/lib/types";
@@ -22,7 +22,6 @@ interface PostWithComments extends PostWithDetails {
 export function PostFeed() {
   const [posts, setPosts] = useState<PostWithComments[]>([]);
   const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,7 +38,6 @@ export function PostFeed() {
 
         const data = await response.json();
         setPosts(data.posts);
-        setHasMore(data.hasMore);
       } catch (err) {
         console.error("PostFeed fetch error:", err);
         setError(err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.");

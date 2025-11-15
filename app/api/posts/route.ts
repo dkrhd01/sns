@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
             .select("*", { count: "exact", head: true })
             .eq("post_id", postId);
           likeCount = count || 0;
-        } catch (error) {
+        } catch {
           // likes 테이블이 없으면 0으로 처리
           console.warn("Likes table not found, using 0");
         }
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
             .select("*", { count: "exact", head: true })
             .eq("post_id", postId);
           commentCount = count || 0;
-        } catch (error) {
+        } catch {
           // comments 테이블이 없으면 0으로 처리
           console.warn("Comments table not found, using 0");
         }
@@ -123,7 +123,7 @@ export async function GET(request: NextRequest) {
               .eq("user_id", currentUserId)
               .single();
             isLiked = !!likeData;
-          } catch (error) {
+          } catch {
             // likes 테이블이 없으면 false로 처리
             console.warn("Likes table not found, using false");
           }
@@ -190,7 +190,7 @@ export async function GET(request: NextRequest) {
               },
             }));
           }
-        } catch (error) {
+        } catch {
           // comments 테이블이 없으면 빈 배열로 처리
           console.warn("Comments table not found, using empty array");
         }

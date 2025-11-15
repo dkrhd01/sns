@@ -213,6 +213,7 @@ PRD 기반 개발 체크리스트
 ### 1-4. 홈 피드 - 좋아요 기능
 
 #### 구현 순서
+
 1. `likes` 테이블 마이그레이션 생성
 2. `/api/likes` POST API 구현 (좋아요 추가)
 3. `/api/likes` DELETE API 구현 (좋아요 삭제)
@@ -222,6 +223,7 @@ PRD 기반 개발 체크리스트
 #### 상세 구현 계획
 
 **1. `likes` 테이블 생성 (Supabase 마이그레이션)**
+
 - [x] 마이그레이션 파일 생성 (`supabase/migrations/20250116035251_create_likes_table.sql`)
 - [x] 테이블 스키마
   - [x] `id` (UUID, Primary Key, DEFAULT gen_random_uuid())
@@ -238,6 +240,7 @@ PRD 기반 개발 체크리스트
 - [x] 권한 부여 (anon, authenticated, service_role)
 
 **2. `/api/likes` POST API (`app/api/likes/route.ts`)**
+
 - [x] 요청 본문: `{ postId: string }`
 - [x] Clerk 인증 확인 (`auth()`)
 - [x] Clerk user ID로 Supabase users 테이블에서 user_id 조회
@@ -250,6 +253,7 @@ PRD 기반 개발 체크리스트
 - [x] 에러 처리 (try-catch)
 
 **3. `/api/likes` DELETE API (`app/api/likes/[postId]/route.ts`)**
+
 - [x] URL 파라미터: `postId`
 - [x] Clerk 인증 확인 (`auth()`)
 - [x] Clerk user ID로 Supabase users 테이블에서 user_id 조회
@@ -260,6 +264,7 @@ PRD 기반 개발 체크리스트
 - [x] 에러 처리 (try-catch)
 
 **4. PostCard에 좋아요 기능 통합 (`components/post/PostCard.tsx`)**
+
 - [x] 상태 관리
   - [x] `isLiked`: 로컬 좋아요 상태 (post.is_liked 초기값)
   - [x] `likeCount`: 로컬 좋아요 수 (post.like_count 초기값)
@@ -280,6 +285,7 @@ PRD 기반 개발 체크리스트
   - [x] 로딩 중 버튼 비활성화
 
 **5. 더블탭 좋아요 기능 (`components/post/PostCard.tsx`)**
+
 - [x] 이미지 영역에 더블탭 이벤트 핸들러 추가
 - [x] `handleDoubleClick()` 함수
   - [x] 현재 좋아요 상태 확인
