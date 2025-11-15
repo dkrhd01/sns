@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClerkSupabaseClient } from "@/lib/supabase/server";
 import { auth } from "@clerk/nextjs/server";
-import type { PostWithDetails, CommentWithUser } from "@/lib/types";
+import type { PostWithDetails } from "@/lib/types";
 
 /**
  * @file route.ts
@@ -71,6 +71,7 @@ export async function GET(
       );
     }
 
+
     // 좋아요 수 집계
     let likeCount = 0;
     try {
@@ -111,6 +112,16 @@ export async function GET(
       }
     }
 
+    // users가 단일 객체인지 확인 (타입 가드)
+    const userData = Array.isArray(post.users) ? post.users[0] : post.users;
+    
+    if (!userData) {
+      return NextResponse.json(
+        { error: "사용자 정보를 찾을 수 없습니다." },
+        { status: 404 }
+      );
+    }
+
     const postWithDetails: PostWithDetails = {
       id: post.id,
       user_id: post.user_id,
@@ -119,10 +130,10 @@ export async function GET(
       created_at: post.created_at,
       updated_at: post.updated_at,
       user: {
-        id: post.users.id,
-        clerk_id: post.users.clerk_id,
-        name: post.users.name,
-        created_at: post.users.created_at,
+        id: userData.id,
+        clerk_id: userData.clerk_id,
+        name: userData.name,
+        created_at: userData.created_at,
       },
       like_count: likeCount,
       comment_count: commentCount,

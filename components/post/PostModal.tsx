@@ -1,18 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { X, Heart, MessageCircle, Send, Bookmark, MoreVertical } from "lucide-react";
+import { X, Heart, MessageCircle, Send, Bookmark } from "lucide-react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog";
-import { Avatar } from "@/components/ui/Avatar";
-import { PostCard } from "./PostCard";
 import { CommentList } from "@/components/comment/CommentList";
 import { CommentForm } from "@/components/comment/CommentForm";
 import { useUser } from "@clerk/nextjs";
-import type { PostWithDetails, CommentWithUser } from "@/lib/types";
+import type { PostWithDetails } from "@/lib/types";
 
 /**
  * @file PostModal.tsx
@@ -36,7 +34,6 @@ interface PostModalProps {
 }
 
 export function PostModal({ postId, open, onOpenChange }: PostModalProps) {
-  const router = useRouter();
   const { user } = useUser();
   const [post, setPost] = useState<PostWithDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,11 +89,13 @@ export function PostModal({ postId, open, onOpenChange }: PostModalProps) {
         ) : (
           <div className="flex flex-col md:flex-row h-[90vh] max-h-[600px]">
             {/* 이미지 영역 (Desktop: 50%, Mobile: 전체) */}
-            <div className="w-full md:w-1/2 bg-black flex items-center justify-center">
-              <img
+            <div className="w-full md:w-1/2 bg-black flex items-center justify-center relative">
+              <Image
                 src={post.image_url}
                 alt={post.caption || "게시물 이미지"}
-                className="w-full h-full object-contain"
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 50vw"
               />
             </div>
 
@@ -105,11 +104,6 @@ export function PostModal({ postId, open, onOpenChange }: PostModalProps) {
               {/* 게시물 헤더 */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--instagram-border)]">
                 <div className="flex items-center gap-3">
-                  <Avatar
-                    src={post.user.name}
-                    alt={post.user.name}
-                    size="sm"
-                  />
                   <span className="font-semibold text-[var(--instagram-text-primary)]">
                     {post.user.name}
                   </span>

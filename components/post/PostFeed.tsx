@@ -44,7 +44,7 @@ export function PostFeed({ refreshTrigger }: PostFeedProps = {}) {
       let response: Response;
       try {
         response = await fetch(`/api/posts?page=${pageNum}&limit=10`);
-      } catch (networkError) {
+      } catch {
         // 네트워크 에러 처리
         throw new Error("인터넷 연결을 확인해주세요.");
       }
@@ -113,7 +113,6 @@ export function PostFeed({ refreshTrigger }: PostFeedProps = {}) {
     setPage(1);
     setHasMore(true);
     fetchPosts(1, false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshTrigger]);
 
   if (loading) {
@@ -127,11 +126,21 @@ export function PostFeed({ refreshTrigger }: PostFeedProps = {}) {
   }
 
   if (error) {
+    const isDatabaseError = error.includes("Could not find the table") || 
+                           error.includes("Database tables not initialized");
+    
     return (
       <div className="flex flex-col items-center justify-center py-12 px-4">
-        <p className="text-[var(--instagram-text-secondary)] text-center">
+        <p className="text-[var(--instagram-text-secondary)] text-center mb-2">
           {error}
         </p>
+        {isDatabaseError && (
+          <p className="text-sm text-[var(--instagram-text-secondary)] text-center mb-4 max-w-md">
+            데이터베이스 테이블이 초기화되지 않았습니다. Supabase 마이그레이션을 실행해주세요.
+            <br />
+            자세한 내용은 <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">docs/DEPLOY.md</code>를 참고하세요.
+          </p>
+        )}
         <button
           onClick={() => window.location.reload()}
           className="mt-4 px-4 py-2 bg-[var(--instagram-blue)] text-white rounded-lg hover:opacity-90 transition-opacity"

@@ -101,12 +101,13 @@ export async function GET(request: NextRequest) {
           .from("users")
           .select("id")
           .or(`id.eq.${userId},clerk_id.eq.${userId}`)
-          .single();
+          .maybeSingle();
 
         if (targetUser) {
           query = query.eq("user_id", targetUser.id);
         } else {
           // 사용자를 찾을 수 없으면 빈 배열 반환
+          console.warn(`User not found: ${userId}`);
           return NextResponse.json({
             posts: [],
             hasMore: false,
@@ -130,21 +131,30 @@ export async function GET(request: NextRequest) {
       postsError = err;
     }
 
-    // 테이블이 없거나 에러가 발생한 경우 (PGRST116 = relation does not exist)
+    // 테이블이 없거나 에러가 발생한 경우
     if (postsError) {
       const errorCode = (postsError as any)?.code;
+      const errorMessage = (postsError as any)?.message || "";
       
-      // 테이블이 없는 경우 빈 배열 반환 (치명적이지 않음)
-      if (errorCode === "PGRST116" || errorCode === "42P01") {
+      // 테이블이 없는 경우 (다양한 에러 코드 체크)
+      const isTableNotFound = 
+        errorCode === "PGRST116" || 
+        errorCode === "42P01" ||
+        errorMessage.includes("Could not find the table") ||
+        errorMessage.includes("relation") && errorMessage.includes("does not exist");
+      
+      if (isTableNotFound) {
         console.warn("Posts table does not exist yet, returning empty array");
+        console.warn("Please run Supabase migrations. See docs/DEPLOY.md for details.");
         return NextResponse.json({
           posts: [],
           hasMore: false,
+          warning: "Database tables not initialized. Please run migrations.",
         });
       }
 
       console.error("Posts fetch error:", {
-        message: (postsError as any)?.message,
+        message: errorMessage,
         code: errorCode,
         details: (postsError as any)?.details,
         hint: (postsError as any)?.hint,
@@ -153,7 +163,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { 
           error: "Failed to fetch posts", 
-          details: (postsError as any)?.message || "Unknown error",
+          details: errorMessage || "Unknown error",
           code: errorCode,
         },
         { status: 500 }
@@ -398,7 +408,7 @@ export async function POST(request: NextRequest) {
     // Storage에 이미지 업로드 (uploads 버킷)
     const STORAGE_BUCKET = process.env.NEXT_PUBLIC_STORAGE_BUCKET || "uploads";
     
-    const { data: uploadData, error: uploadError } = await supabaseService.storage
+    const { error: uploadError } = await supabaseService.storage
       .from(STORAGE_BUCKET)
       .upload(filePath, imageFile, {
         cacheControl: "3600",

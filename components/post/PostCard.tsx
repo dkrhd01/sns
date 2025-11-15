@@ -34,7 +34,6 @@ export function PostCard({ post, comments = [] }: PostCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showDoubleTapHeart, setShowDoubleTapHeart] = useState(false);
   const [heartScale, setHeartScale] = useState(1);
-  const [refreshComments, setRefreshComments] = useState(0);
 
   const { truncated: truncatedCaption, isTruncated: isCaptionTruncated } =
     truncateText(post.caption || "", 2);
@@ -62,7 +61,7 @@ export function PostCard({ post, comments = [] }: PostCardProps) {
           response = await fetch(`/api/likes/${post.id}`, {
             method: "DELETE",
           });
-        } catch (networkError) {
+        } catch {
           throw new Error("인터넷 연결을 확인해주세요.");
         }
 
@@ -79,7 +78,7 @@ export function PostCard({ post, comments = [] }: PostCardProps) {
             },
             body: JSON.stringify({ postId: post.id }),
           });
-        } catch (networkError) {
+        } catch {
           throw new Error("인터넷 연결을 확인해주세요.");
         }
 
@@ -284,7 +283,6 @@ export function PostCard({ post, comments = [] }: PostCardProps) {
           <CommentForm
             postId={post.id}
             onCommentAdded={() => {
-              setRefreshComments((prev) => prev + 1);
               // 페이지 새로고침으로 댓글 수 업데이트
               window.location.reload();
             }}

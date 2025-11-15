@@ -60,7 +60,7 @@ export function ProfileHeader({ userId, isOwnProfile = false }: ProfileHeaderPro
         let response: Response;
         try {
           response = await fetch(`/api/users/${userId}`);
-        } catch (networkError) {
+        } catch {
           throw new Error("인터넷 연결을 확인해주세요.");
         }
         
@@ -98,10 +98,11 @@ export function ProfileHeader({ userId, isOwnProfile = false }: ProfileHeaderPro
       if (previousIsFollowing) {
         // 언팔로우
         try {
+          // userId는 Supabase user ID (ProfileHeader에 전달된 값)
           response = await fetch(`/api/follows/${userId}`, {
             method: "DELETE",
           });
-        } catch (networkError) {
+        } catch {
           throw new Error("인터넷 연결을 확인해주세요.");
         }
 
@@ -112,6 +113,7 @@ export function ProfileHeader({ userId, isOwnProfile = false }: ProfileHeaderPro
       } else {
         // 팔로우
         try {
+          // userId는 Supabase user ID (ProfileHeader에 전달된 값)
           response = await fetch("/api/follows", {
             method: "POST",
             headers: {
@@ -119,7 +121,7 @@ export function ProfileHeader({ userId, isOwnProfile = false }: ProfileHeaderPro
             },
             body: JSON.stringify({ followingId: userId }),
           });
-        } catch (networkError) {
+        } catch {
           throw new Error("인터넷 연결을 확인해주세요.");
         }
 
@@ -130,9 +132,9 @@ export function ProfileHeader({ userId, isOwnProfile = false }: ProfileHeaderPro
       }
 
       // 프로필 데이터 새로고침
-      const response = await fetch(`/api/users/${userId}`);
-      if (response.ok) {
-        const data = await response.json();
+      const refreshResponse = await fetch(`/api/users/${userId}`);
+      if (refreshResponse.ok) {
+        const data = await refreshResponse.json();
         setProfileData(data);
         setIsFollowing(data.isFollowing || false);
       }

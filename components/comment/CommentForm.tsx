@@ -60,7 +60,7 @@ export function CommentForm({
             content: content.trim(),
           }),
         });
-      } catch (networkError) {
+      } catch {
         throw new Error("인터넷 연결을 확인해주세요.");
       }
 

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { X, Image as ImageIcon, Loader2 } from "lucide-react";
 import {
   Dialog,
@@ -107,7 +108,7 @@ export function CreatePostModal({
           method: "POST",
           body: formData,
         });
-      } catch (networkError) {
+      } catch {
         throw new Error("인터넷 연결을 확인해주세요.");
       }
 
@@ -149,11 +150,17 @@ export function CreatePostModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] p-0">
+      <DialogContent 
+        className="sm:max-w-[600px] p-0"
+        aria-describedby="create-post-description"
+      >
         <DialogHeader className="px-6 py-4 border-b border-[var(--instagram-border)]">
           <DialogTitle className="text-center font-semibold">
             새 게시물 만들기
           </DialogTitle>
+          <p id="create-post-description" className="sr-only">
+            이미지를 선택하고 캡션을 입력하여 새 게시물을 만듭니다.
+          </p>
         </DialogHeader>
 
         <div className="p-6 space-y-4">
@@ -182,11 +189,13 @@ export function CreatePostModal({
             </div>
           ) : (
             <div className="relative">
-              <div className="aspect-square w-full rounded-lg overflow-hidden bg-[var(--instagram-background)]">
-                <img
+              <div className="aspect-square w-full rounded-lg overflow-hidden bg-[var(--instagram-background)] relative">
+                <Image
                   src={previewUrl}
                   alt="미리보기"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="600px"
                 />
               </div>
               <Button

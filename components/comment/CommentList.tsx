@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Trash2 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { formatTimeAgo } from "@/lib/utils";
 import type { CommentWithUser } from "@/lib/types";
@@ -40,7 +40,7 @@ export function CommentList({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -63,11 +63,11 @@ export function CommentList({
     } finally {
       setLoading(false);
     }
-  };
+  }, [postId, preview]);
 
   useEffect(() => {
     fetchComments();
-  }, [postId, preview]);
+  }, [fetchComments]);
 
   const handleDelete = async (commentId: string) => {
     if (!confirm("댓글을 삭제하시겠습니까?")) {

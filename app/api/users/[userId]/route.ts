@@ -20,12 +20,34 @@ export async function GET(
     const { userId } = await params;
     const supabase = createClerkSupabaseClient();
 
-    // 사용자 정보 조회
-    const { data: userData, error: userError } = await supabase
+    // userId가 Clerk ID인지 Supabase user ID인지 확인
+    // 먼저 id로 조회, 없으면 clerk_id로 조회
+    let userData = null;
+    let userError = null;
+
+    // Supabase user ID로 조회 시도
+    const { data: userById, error: errorById } = await supabase
       .from("users")
       .select("id, clerk_id, name, created_at")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
+
+    if (userById) {
+      userData = userById;
+    } else {
+      // Clerk ID로 조회 시도
+      const { data: userByClerkId, error: errorByClerkId } = await supabase
+        .from("users")
+        .select("id, clerk_id, name, created_at")
+        .eq("clerk_id", userId)
+        .maybeSingle();
+
+      if (userByClerkId) {
+        userData = userByClerkId;
+      } else {
+        userError = errorByClerkId || errorById;
+      }
+    }
 
     if (userError || !userData) {
       return NextResponse.json(
@@ -34,13 +56,16 @@ export async function GET(
       );
     }
 
+    // 실제 Supabase user ID 사용
+    const actualUserId = userData.id;
+
     // 게시물 수 집계
     let postCount = 0;
     try {
       const { count } = await supabase
         .from("posts")
         .select("*", { count: "exact", head: true })
-        .eq("user_id", userId);
+        .eq("user_id", actualUserId);
       postCount = count || 0;
     } catch {
       // posts 테이블이 없으면 0으로 처리
@@ -52,7 +77,7 @@ export async function GET(
       const { count } = await supabase
         .from("follows")
         .select("*", { count: "exact", head: true })
-        .eq("following_id", userId);
+        .eq("following_id", actualUserId);
       followerCount = count || 0;
     } catch {
       // follows 테이블이 없으면 0으로 처리
@@ -64,7 +89,7 @@ export async function GET(
       const { count } = await supabase
         .from("follows")
         .select("*", { count: "exact", head: true })
-        .eq("follower_id", userId);
+        .eq("follower_id", actualUserId);
       followingCount = count || 0;
     } catch {
       // follows 테이블이 없으면 0으로 처리
@@ -80,17 +105,17 @@ export async function GET(
           .from("users")
           .select("id")
           .eq("clerk_id", currentClerkUserId)
-          .single();
+          .maybeSingle();
 
-        if (currentUserData && currentUserData.id !== userId) {
+        if (currentUserData && currentUserData.id !== actualUserId) {
           // follows 테이블에서 팔로우 여부 확인
           try {
             const { data: followData } = await supabase
               .from("follows")
               .select("id")
               .eq("follower_id", currentUserData.id)
-              .eq("following_id", userId)
-              .single();
+              .eq("following_id", actualUserId)
+              .maybeSingle();
             isFollowing = !!followData;
           } catch {
             // follows 테이블이 없으면 false로 처리

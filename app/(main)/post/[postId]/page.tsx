@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { ArrowLeft, Heart, MessageCircle, Send, Bookmark } from "lucide-react";
-import { Avatar } from "@/components/ui/Avatar";
 import { CommentList } from "@/components/comment/CommentList";
 import { CommentForm } from "@/components/comment/CommentForm";
 import { useUser } from "@clerk/nextjs";
@@ -102,11 +102,13 @@ export default function PostPage({ params }: PostPageProps) {
       </div>
 
       {/* 이미지 */}
-      <div className="w-full aspect-square bg-black">
-        <img
+      <div className="w-full aspect-square bg-black relative">
+        <Image
           src={post.image_url}
           alt={post.caption || "게시물 이미지"}
-          className="w-full h-full object-contain"
+          fill
+          className="object-contain"
+          sizes="100vw"
         />
       </div>
 

@@ -45,7 +45,7 @@ export function PostGrid({ userId }: PostGridProps) {
         let response: Response;
         try {
           response = await fetch(`/api/posts?userId=${userId}&limit=100`);
-        } catch (networkError) {
+        } catch {
           throw new Error("인터넷 연결을 확인해주세요.");
         }
         
