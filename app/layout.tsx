@@ -27,8 +27,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 빌드 타임에는 환경변수가 없을 수 있으므로, 기본값 제공
+  // Vercel에서는 환경변수를 설정해야 정상 작동
+  const publishableKey =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+    "pk_test_placeholder";
+
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    console.warn(
+      "⚠️ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is missing. Please set it in your environment variables."
+    );
+  }
+
   return (
-    <ClerkProvider localization={koKR}>
+    <ClerkProvider publishableKey={publishableKey} localization={koKR}>
       <html lang="ko">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
