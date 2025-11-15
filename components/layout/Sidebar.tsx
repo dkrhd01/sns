@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { Home, Search, Plus, User } from "lucide-react";
+import { CreatePostModal } from "@/components/post/CreatePostModal";
 
 /**
  * @file Sidebar.tsx
@@ -17,6 +19,7 @@ import { Home, Search, Plus, User } from "lucide-react";
 export function Sidebar() {
   const pathname = usePathname();
   const { user } = useUser();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const menuItems = [
     {
@@ -34,8 +37,9 @@ export function Sidebar() {
     {
       icon: Plus,
       label: "만들기",
-      href: "#", // 게시물 작성 모달은 2단계에서 구현
+      href: "#",
       active: false,
+      onClick: () => setIsCreateModalOpen(true),
     },
     {
       icon: User,
@@ -46,36 +50,66 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex md:flex-col md:fixed md:left-0 md:top-0 md:h-screen md:bg-[var(--instagram-card-background)] md:border-r md:border-[var(--instagram-border)] lg:w-[244px] md:w-[72px] z-40">
-      <div className="flex flex-col p-4 gap-1">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = item.active;
+    <>
+      <aside className="hidden md:flex md:flex-col md:fixed md:left-0 md:top-0 md:h-screen md:bg-[var(--instagram-card-background)] md:border-r md:border-[var(--instagram-border)] lg:w-[244px] md:w-[72px] z-40">
+        <div className="flex flex-col p-4 gap-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.active;
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`
-                flex items-center gap-4 px-4 py-3 rounded-lg transition-colors
-                ${
-                  isActive
-                    ? "font-bold text-[var(--instagram-text-primary)]"
-                    : "text-[var(--instagram-text-primary)] hover:bg-gray-100"
-                }
-              `}
-            >
-              <Icon
-                className={`w-6 h-6 ${
-                  isActive ? "stroke-[2.5]" : "stroke-2"
-                }`}
-              />
-              <span className="lg:inline-block md:hidden">{item.label}</span>
-            </Link>
-          );
-        })}
-      </div>
-    </aside>
+            if (item.onClick) {
+              return (
+                <button
+                  key={item.href}
+                  onClick={item.onClick}
+                  className={`
+                    flex items-center gap-4 px-4 py-3 rounded-lg transition-colors
+                    ${
+                      isActive
+                        ? "font-bold text-[var(--instagram-text-primary)]"
+                        : "text-[var(--instagram-text-primary)] hover:bg-gray-100"
+                    }
+                  `}
+                >
+                  <Icon
+                    className={`w-6 h-6 ${
+                      isActive ? "stroke-[2.5]" : "stroke-2"
+                    }`}
+                  />
+                  <span className="lg:inline-block md:hidden">{item.label}</span>
+                </button>
+              );
+            }
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  flex items-center gap-4 px-4 py-3 rounded-lg transition-colors
+                  ${
+                    isActive
+                      ? "font-bold text-[var(--instagram-text-primary)]"
+                      : "text-[var(--instagram-text-primary)] hover:bg-gray-100"
+                  }
+                `}
+              >
+                <Icon
+                  className={`w-6 h-6 ${
+                    isActive ? "stroke-[2.5]" : "stroke-2"
+                  }`}
+                />
+                <span className="lg:inline-block md:hidden">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </aside>
+      <CreatePostModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
+    </>
   );
 }
 

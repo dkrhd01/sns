@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
 import { Heart, MessageCircle, Send, Bookmark, MoreVertical } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { formatTimeAgo, truncateText } from "@/lib/utils";
+import { CommentForm } from "@/components/comment/CommentForm";
 import type { PostWithDetails, CommentWithUser } from "@/lib/types";
 
 /**
@@ -25,12 +27,14 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, comments = [] }: PostCardProps) {
+  const { user } = useUser();
   const [showFullCaption, setShowFullCaption] = useState(false);
   const [isLiked, setIsLiked] = useState(post.is_liked);
   const [likeCount, setLikeCount] = useState(post.like_count);
   const [isLoading, setIsLoading] = useState(false);
   const [showDoubleTapHeart, setShowDoubleTapHeart] = useState(false);
   const [heartScale, setHeartScale] = useState(1);
+  const [refreshComments, setRefreshComments] = useState(0);
 
   const { truncated: truncatedCaption, isTruncated: isCaptionTruncated } =
     truncateText(post.caption || "", 2);
@@ -51,24 +55,33 @@ export function PostCard({ post, comments = [] }: PostCardProps) {
     setIsLoading(true);
 
     try {
+      let response: Response;
       if (previousIsLiked) {
         // 좋아요 삭제
-        const response = await fetch(`/api/likes/${post.id}`, {
-          method: "DELETE",
-        });
+        try {
+          response = await fetch(`/api/likes/${post.id}`, {
+            method: "DELETE",
+          });
+        } catch (networkError) {
+          throw new Error("인터넷 연결을 확인해주세요.");
+        }
 
         if (!response.ok) {
-          throw new Error("Failed to unlike");
+          throw new Error("좋아요 취소에 실패했습니다.");
         }
       } else {
         // 좋아요 추가
-        const response = await fetch("/api/likes", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ postId: post.id }),
-        });
+        try {
+          response = await fetch("/api/likes", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ postId: post.id }),
+          });
+        } catch (networkError) {
+          throw new Error("인터넷 연결을 확인해주세요.");
+        }
 
         if (!response.ok) {
           if (response.status === 409) {
@@ -76,7 +89,8 @@ export function PostCard({ post, comments = [] }: PostCardProps) {
             setIsLiked(true);
             return;
           }
-          throw new Error("Failed to like");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "좋아요에 실패했습니다.");
         }
       }
     } catch (error) {
@@ -84,6 +98,7 @@ export function PostCard({ post, comments = [] }: PostCardProps) {
       // 롤백
       setIsLiked(previousIsLiked);
       setLikeCount(previousLikeCount);
+      // 사용자에게 에러 표시 (선택사항)
     } finally {
       setIsLoading(false);
       setTimeout(() => setHeartScale(1), 150);
@@ -251,14 +266,30 @@ export function PostCard({ post, comments = [] }: PostCardProps) {
               </div>
             )}
             {post.comment_count > 2 && (
-              <Link
-                href={`/post/${post.id}`}
-                className="text-[var(--instagram-text-secondary)] text-sm hover:opacity-70"
+              <button
+                onClick={() => {
+                  // TODO: PostModal 열기 (3-4 단계에서 구현)
+                  window.location.href = `/post/${post.id}`;
+                }}
+                className="text-[var(--instagram-text-secondary)] text-sm hover:opacity-70 text-left"
               >
                 댓글 {post.comment_count}개 모두 보기
-              </Link>
+              </button>
             )}
           </div>
+        )}
+
+        {/* 댓글 작성 폼 */}
+        {user && (
+          <CommentForm
+            postId={post.id}
+            onCommentAdded={() => {
+              setRefreshComments((prev) => prev + 1);
+              // 페이지 새로고침으로 댓글 수 업데이트
+              window.location.reload();
+            }}
+            className="mt-2"
+          />
         )}
       </div>
     </article>

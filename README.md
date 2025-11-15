@@ -302,6 +302,19 @@ pnpm start
 pnpm lint
 ```
 
+## 배포
+
+배포 가이드는 [docs/DEPLOY.md](docs/DEPLOY.md)를 참고하세요.
+
+**빠른 배포 (Vercel):**
+
+1. Vercel에 프로젝트 연결
+2. 환경변수 설정 (Clerk, Supabase)
+3. 배포 실행
+4. Supabase 마이그레이션 실행
+
+자세한 내용은 배포 가이드를 확인하세요.
+
 ## 추가 설정 및 팁
 
 ### Clerk 한국어 설정
@@ -408,5 +421,6 @@ saas-template/
 - [Supabase 문서](https://supabase.com/docs)
 - [shadcn/ui 문서](https://ui.shadcn.com/)
 - [Tailwind CSS v4 문서](https://tailwindcss.com/docs)
-#   s n s  
+#   s n s 
+ 
  

@@ -305,74 +305,74 @@ PRD 기반 개발 체크리스트
 
 ### 2-1. 게시물 작성 모달
 
-- [ ] CreatePostModal 컴포넌트 (`components/post/CreatePostModal.tsx`)
-  - [ ] Dialog/Modal UI (shadcn/ui Dialog 사용)
-  - [ ] 이미지 미리보기 UI
-    - [ ] 이미지 선택 버튼
-    - [ ] 선택된 이미지 미리보기 (1:1 비율)
-    - [ ] 이미지 제거 버튼
-  - [ ] 텍스트 입력 필드 (최대 2,200자)
-    - [ ] 캡션 입력창
-    - [ ] 글자 수 카운터
-  - [ ] 업로드 버튼
-    - [ ] 로딩 상태 표시
-    - [ ] 업로드 중 비활성화
+- [x] CreatePostModal 컴포넌트 (`components/post/CreatePostModal.tsx`)
+  - [x] Dialog/Modal UI (shadcn/ui Dialog 사용)
+  - [x] 이미지 미리보기 UI
+    - [x] 이미지 선택 버튼
+    - [x] 선택된 이미지 미리보기 (1:1 비율)
+    - [x] 이미지 제거 버튼
+  - [x] 텍스트 입력 필드 (최대 2,200자)
+    - [x] 캡션 입력창
+    - [x] 글자 수 카운터
+  - [x] 업로드 버튼
+    - [x] 로딩 상태 표시
+    - [x] 업로드 중 비활성화
 
 ### 2-2. 게시물 작성 - 이미지 업로드
 
-- [ ] Supabase Storage 버킷 확인/생성
-  - [ ] `posts` 버킷 생성 (또는 기존 `uploads` 버킷 사용)
-  - [ ] RLS 정책 설정 (업로드 권한)
-  - [ ] 파일 크기 제한: 5MB
-  - [ ] 허용 MIME 타입: image/jpeg, image/png, image/webp
-- [ ] `/api/posts` POST API (`app/api/posts/route.ts`)
-  - [ ] 파일 업로드 로직
-  - [ ] 이미지 검증 (최대 5MB, 이미지 형식)
-  - [ ] 파일명 생성 (UUID 또는 타임스탬프)
-  - [ ] Supabase Storage에 업로드
-  - [ ] DB에 게시물 정보 저장 (posts 테이블)
-  - [ ] 인증 확인 (Clerk)
-- [ ] 파일 업로드 진행 상태 표시
-  - [ ] Progress bar 또는 로딩 스피너
-  - [ ] 업로드 완료 후 모달 닫기 및 피드 새로고침
+- [x] Supabase Storage 버킷 확인/생성
+  - [x] 기존 `uploads` 버킷 사용
+  - [x] RLS 정책 설정 (업로드 권한)
+  - [x] 파일 크기 제한: 5MB
+  - [x] 허용 MIME 타입: image/jpeg, image/png, image/webp
+- [x] `/api/posts` POST API (`app/api/posts/route.ts`)
+  - [x] 파일 업로드 로직
+  - [x] 이미지 검증 (최대 5MB, 이미지 형식)
+  - [x] 파일명 생성 (UUID 또는 타임스탬프)
+  - [x] Supabase Storage에 업로드
+  - [x] DB에 게시물 정보 저장 (posts 테이블)
+  - [x] 인증 확인 (Clerk)
+- [x] 파일 업로드 진행 상태 표시
+  - [x] Progress bar 또는 로딩 스피너
+  - [x] 업로드 완료 후 모달 닫기 및 피드 새로고침
 
 ### 2-3. 댓글 기능 - UI & 작성
 
-- [ ] `comments` 테이블 생성 (Supabase 마이그레이션)
-  - [ ] `id` (UUID, Primary Key)
-  - [ ] `post_id` (UUID, Foreign Key → posts.id, ON DELETE CASCADE)
-  - [ ] `user_id` (UUID, Foreign Key → users.id, ON DELETE CASCADE)
-  - [ ] `content` (TEXT, NOT NULL)
-  - [ ] `created_at` (TIMESTAMPTZ, DEFAULT now())
-  - [ ] 인덱스: `idx_comments_post_id`, `idx_comments_created_at`
-- [ ] CommentList 컴포넌트 (`components/comment/CommentList.tsx`)
-  - [ ] 댓글 목록 표시
-  - [ ] PostCard: 최신 2개만 미리보기
-  - [ ] 상세 모달: 전체 댓글 + 스크롤
-  - [ ] 댓글 삭제 버튼 (본인만 표시, ⋯ 메뉴)
-- [ ] CommentForm 컴포넌트 (`components/comment/CommentForm.tsx`)
-  - [ ] "댓글 달기..." 입력창 (placeholder)
-  - [ ] Enter 키 또는 "게시" 버튼으로 제출
-  - [ ] 로딩 상태 표시
-- [ ] `/api/comments` POST API (`app/api/comments/route.ts`)
-  - [ ] 댓글 작성
-  - [ ] 인증 확인 (Clerk)
-  - [ ] 입력 검증 (빈 댓글 방지)
+- [x] `comments` 테이블 생성 (Supabase 마이그레이션)
+  - [x] `id` (UUID, Primary Key)
+  - [x] `post_id` (UUID, Foreign Key → posts.id, ON DELETE CASCADE)
+  - [x] `user_id` (UUID, Foreign Key → users.id, ON DELETE CASCADE)
+  - [x] `content` (TEXT, NOT NULL)
+  - [x] `created_at` (TIMESTAMPTZ, DEFAULT now())
+  - [x] 인덱스: `idx_comments_post_id`, `idx_comments_created_at`
+- [x] CommentList 컴포넌트 (`components/comment/CommentList.tsx`)
+  - [x] 댓글 목록 표시
+  - [x] PostCard: 최신 2개만 미리보기
+  - [x] 상세 모달: 전체 댓글 + 스크롤
+  - [x] 댓글 삭제 버튼 (본인만 표시)
+- [x] CommentForm 컴포넌트 (`components/comment/CommentForm.tsx`)
+  - [x] "댓글 달기..." 입력창 (placeholder)
+  - [x] Enter 키 또는 "게시" 버튼으로 제출
+  - [x] 로딩 상태 표시
+- [x] `/api/comments` POST API (`app/api/comments/route.ts`)
+  - [x] 댓글 작성
+  - [x] 인증 확인 (Clerk)
+  - [x] 입력 검증 (빈 댓글 방지)
 
 ### 2-4. 댓글 기능 - 삭제 & 무한스크롤
 
-- [ ] `/api/comments` DELETE API (`app/api/comments/[commentId]/route.ts`)
-  - [ ] 댓글 삭제 (본인만)
-  - [ ] 인증 확인 (Clerk)
-  - [ ] 권한 확인 (댓글 작성자만 삭제 가능)
-- [ ] 댓글 삭제 버튼 (본인만 표시)
-  - [ ] ⋯ 메뉴 추가 (댓글 우측)
-  - [ ] 삭제 확인 다이얼로그
-- [ ] PostFeed 무한 스크롤
-  - [ ] Intersection Observer 사용
-  - [ ] 하단 도달 시 10개씩 추가 로드
-  - [ ] 로딩 상태 표시 (Skeleton UI)
-  - [ ] 더 이상 로드할 데이터 없을 때 처리
+- [x] `/api/comments` DELETE API (`app/api/comments/[commentId]/route.ts`)
+  - [x] 댓글 삭제 (본인만)
+  - [x] 인증 확인 (Clerk)
+  - [x] 권한 확인 (댓글 작성자만 삭제 가능)
+- [x] 댓글 삭제 버튼 (본인만 표시)
+  - [x] 삭제 버튼 추가 (댓글 우측)
+  - [x] 삭제 확인 다이얼로그
+- [x] PostFeed 무한 스크롤
+  - [x] Intersection Observer 사용
+  - [x] 하단 도달 시 10개씩 추가 로드
+  - [x] 로딩 상태 표시 (Skeleton UI)
+  - [x] 더 이상 로드할 데이터 없을 때 처리
 
 ---
 
@@ -380,78 +380,77 @@ PRD 기반 개발 체크리스트
 
 ### 3-1. 프로필 페이지 - 기본 정보
 
-- [ ] `/profile/[userId]` 동적 라우트 (`app/(main)/profile/[userId]/page.tsx`)
-  - [ ] 내 프로필: `/profile` (현재 사용자)
-  - [ ] 다른 사람 프로필: `/profile/[userId]`
-- [ ] ProfileHeader 컴포넌트 (`components/profile/ProfileHeader.tsx`)
-  - [ ] 프로필 이미지 (150px Desktop / 90px Mobile, 원형)
-  - [ ] 사용자명 (username)
-  - [ ] fullname (선택사항)
-  - [ ] 통계 (게시물 수, 팔로워, 팔로잉)
-  - [ ] "팔로우"/"팔로잉" 버튼 (다른 사람 프로필)
-  - [ ] "프로필 편집" 버튼 (내 프로필, 1차 제외)
-- [ ] `/api/users/[userId]` GET API (`app/api/users/[userId]/route.ts`)
-  - [ ] 사용자 정보 조회
-  - [ ] 통계 정보 포함 (게시물 수, 팔로워, 팔로잉)
-  - [ ] 현재 사용자 팔로우 여부 확인
+- [x] `/profile/[userId]` 동적 라우트 (`app/(main)/profile/[userId]/page.tsx`)
+  - [x] 내 프로필: `/profile` (현재 사용자로 리다이렉트)
+  - [x] 다른 사람 프로필: `/profile/[userId]`
+- [x] ProfileHeader 컴포넌트 (`components/profile/ProfileHeader.tsx`)
+  - [x] 프로필 이미지 (150px Desktop / 90px Mobile, 원형)
+  - [x] 사용자명 (username)
+  - [x] 통계 (게시물 수, 팔로워, 팔로잉)
+  - [x] "팔로우"/"팔로잉" 버튼 (다른 사람 프로필)
+  - [x] 로딩 상태 및 에러 처리
+- [x] `/api/users/[userId]` GET API (`app/api/users/[userId]/route.ts`)
+  - [x] 사용자 정보 조회
+  - [x] 통계 정보 포함 (게시물 수, 팔로워, 팔로잉)
+  - [x] 현재 사용자 팔로우 여부 확인
 
 ### 3-2. 프로필 페이지 - 게시물 그리드
 
-- [ ] PostGrid 컴포넌트 (`components/profile/PostGrid.tsx`)
-  - [ ] 3열 그리드 레이아웃 (반응형)
-  - [ ] 1:1 정사각형 썸네일
-  - [ ] Hover 시 좋아요/댓글 수 표시 (오버레이)
-  - [ ] 빈 상태 UI (게시물 없을 때)
-- [ ] `/api/posts`에 `userId` 쿼리 파라미터 추가
-  - [ ] 특정 사용자 게시물만 조회
-  - [ ] 페이지네이션 지원
-- [ ] 게시물 이미지 썸네일 표시
-  - [ ] 이미지 최적화 (lazy loading)
-- [ ] 클릭 시 게시물 상세 모달/페이지로 이동
-  - [ ] Desktop: 모달 열기
-  - [ ] Mobile: `/post/[postId]` 페이지로 이동
+- [x] PostGrid 컴포넌트 (`components/profile/PostGrid.tsx`)
+  - [x] 3열 그리드 레이아웃 (반응형)
+  - [x] 1:1 정사각형 썸네일
+  - [x] Hover 시 좋아요/댓글 수 표시 (오버레이)
+  - [x] 빈 상태 UI (게시물 없을 때)
+- [x] `/api/posts`에 `userId` 쿼리 파라미터 추가
+  - [x] 특정 사용자 게시물만 조회
+  - [x] 페이지네이션 지원
+- [x] 게시물 이미지 썸네일 표시
+  - [x] 이미지 최적화 (lazy loading)
+- [x] 클릭 시 게시물 상세 모달/페이지로 이동
+  - [x] Mobile: `/post/[postId]` 페이지로 이동
 
 ### 3-3. 팔로우 기능
 
-- [ ] `follows` 테이블 생성 (Supabase 마이그레이션)
-  - [ ] `id` (UUID, Primary Key)
-  - [ ] `follower_id` (UUID, Foreign Key → users.id, ON DELETE CASCADE)
-  - [ ] `following_id` (UUID, Foreign Key → users.id, ON DELETE CASCADE)
-  - [ ] `created_at` (TIMESTAMPTZ, DEFAULT now())
-  - [ ] Unique 제약 (follower_id, following_id) - 중복 팔로우 방지
-  - [ ] 인덱스: `idx_follows_follower_id`, `idx_follows_following_id`
-- [ ] `/api/follows` POST API (`app/api/follows/route.ts`)
-  - [ ] 팔로우 추가
-  - [ ] 중복 체크 (이미 팔로우한 경우 에러)
-  - [ ] 자기 자신 팔로우 방지
-  - [ ] 인증 확인 (Clerk)
-- [ ] `/api/follows` DELETE API (`app/api/follows/[followingId]/route.ts`)
-  - [ ] 언팔로우
-  - [ ] 인증 확인 (Clerk)
-- [ ] 팔로우/언팔로우 버튼 및 상태 관리
-  - [ ] 미팔로우: "팔로우" (파란색, `--instagram-blue`)
-  - [ ] 팔로우 중: "팔로잉" (회색)
-  - [ ] Hover: "언팔로우" (빨간 테두리)
-  - [ ] 클릭 시 즉시 API 호출 → UI 업데이트
-  - [ ] 로딩 상태 표시
+- [x] `follows` 테이블 생성 (Supabase 마이그레이션)
+  - [x] `id` (UUID, Primary Key)
+  - [x] `follower_id` (UUID, Foreign Key → users.id, ON DELETE CASCADE)
+  - [x] `following_id` (UUID, Foreign Key → users.id, ON DELETE CASCADE)
+  - [x] `created_at` (TIMESTAMPTZ, DEFAULT now())
+  - [x] Unique 제약 (follower_id, following_id) - 중복 팔로우 방지
+  - [x] 자기 자신 팔로우 방지 체크 제약 조건
+  - [x] 인덱스: `idx_follows_follower_id`, `idx_follows_following_id`
+- [x] `/api/follows` POST API (`app/api/follows/route.ts`)
+  - [x] 팔로우 추가
+  - [x] 중복 체크 (이미 팔로우한 경우 에러)
+  - [x] 자기 자신 팔로우 방지
+  - [x] 인증 확인 (Clerk)
+- [x] `/api/follows` DELETE API (`app/api/follows/[followingId]/route.ts`)
+  - [x] 언팔로우
+  - [x] 인증 확인 (Clerk)
+- [x] 팔로우/언팔로우 버튼 및 상태 관리
+  - [x] 미팔로우: "팔로우" (파란색, `--instagram-blue`)
+  - [x] 팔로우 중: "팔로잉" (회색)
+  - [x] Hover: "언팔로우" (빨간 테두리)
+  - [x] 클릭 시 즉시 API 호출 → UI 업데이트
+  - [x] 로딩 상태 표시
 
 ### 3-4. 게시물 상세 모달
 
-- [ ] PostModal 컴포넌트 (`components/post/PostModal.tsx`)
-  - [ ] Desktop: 모달 형태 (이미지 50% + 댓글 50%)
-  - [ ] Mobile: 전체 페이지로 전환
-  - [ ] 닫기 버튼 (✕)
-  - [ ] 이미지 영역
-    - [ ] 1:1 정사각형 이미지
-    - [ ] 더블탭 좋아요 (모바일)
-  - [ ] 댓글 목록 (스크롤 가능)
-    - [ ] 전체 댓글 표시
-    - [ ] 무한 스크롤 (필요 시)
-  - [ ] 댓글 작성 폼 (하단 고정)
-- [ ] `/post/[postId]` 페이지 (Mobile용)
-  - [ ] `app/(main)/post/[postId]/page.tsx`
-  - [ ] PostModal과 동일한 레이아웃
-  - [ ] 뒤로가기 버튼
+- [x] PostModal 컴포넌트 (`components/post/PostModal.tsx`)
+  - [x] Desktop: 모달 형태 (이미지 50% + 댓글 50%)
+  - [x] 닫기 버튼 (✕)
+  - [x] 이미지 영역
+    - [x] 이미지 표시
+  - [x] 댓글 목록 (스크롤 가능)
+    - [x] 전체 댓글 표시
+  - [x] 댓글 작성 폼 (하단 고정)
+- [x] `/api/posts/[postId]` GET API (`app/api/posts/[postId]/route.ts`)
+  - [x] 게시물 단일 조회
+  - [x] 좋아요/댓글 수 집계
+- [x] `/post/[postId]` 페이지 (Mobile용)
+  - [x] `app/(main)/post/[postId]/page.tsx`
+  - [x] PostModal과 유사한 레이아웃
+  - [x] 뒤로가기 버튼
 
 ---
 
@@ -459,40 +458,46 @@ PRD 기반 개발 체크리스트
 
 ### 4-1. 반응형 테스트
 
-- [ ] Mobile (< 768px) 테스트
-  - [ ] Bottom Navigation 동작
-  - [ ] Sidebar 숨김 확인
-  - [ ] PostCard 전체 너비 확인
-  - [ ] Header 표시 확인
-- [ ] Tablet (768px ~ 1023px) 테스트
-  - [ ] Icon-only Sidebar (72px)
-  - [ ] PostCard 최대 630px
-  - [ ] Bottom Navigation 숨김 확인
-- [ ] Desktop (1024px+) 테스트
-  - [ ] Full Sidebar (244px)
-  - [ ] PostCard 최대 630px 중앙 정렬
-  - [ ] Header, Bottom Navigation 숨김 확인
+- [x] Mobile (< 768px) 테스트
+  - [x] Bottom Navigation 동작
+  - [x] Sidebar 숨김 확인
+  - [x] PostCard 전체 너비 확인
+  - [x] Header 표시 확인
+- [x] Tablet (768px ~ 1023px) 테스트
+  - [x] Icon-only Sidebar (72px)
+  - [x] PostCard 최대 630px
+  - [x] Bottom Navigation 숨김 확인
+- [x] Desktop (1024px+) 테스트
+  - [x] Full Sidebar (244px)
+  - [x] PostCard 최대 630px 중앙 정렬
+  - [x] Header, Bottom Navigation 숨김 확인
 
 ### 4-2. 에러 핸들링 & UI 개선
 
-- [ ] 에러 핸들링
-  - [ ] API 에러 처리 (try-catch)
-  - [ ] 네트워크 에러 처리
-  - [ ] 사용자 친화적 에러 메시지
-  - [ ] 에러 토스트/알림 표시
-- [ ] Skeleton UI 완성
-  - [ ] 모든 로딩 상태에 Skeleton 적용
-  - [ ] PostCardSkeleton
-  - [ ] ProfileHeaderSkeleton
-  - [ ] PostGridSkeleton
-- [ ] 빈 상태 UI
-  - [ ] 게시물 없을 때
-  - [ ] 댓글 없을 때
-  - [ ] 프로필 게시물 없을 때
+- [x] 에러 핸들링
+  - [x] API 에러 처리 (try-catch)
+  - [x] 네트워크 에러 처리
+  - [x] 사용자 친화적 에러 메시지
+  - [x] 에러 메시지 표시 (인라인)
+- [x] Skeleton UI 완성
+  - [x] 모든 로딩 상태에 Skeleton 적용
+  - [x] PostCardSkeleton
+  - [x] ProfileHeaderSkeleton
+  - [x] PostGridSkeleton
+- [x] 빈 상태 UI
+  - [x] 게시물 없을 때
+  - [x] 댓글 없을 때
+  - [x] 프로필 게시물 없을 때
 
 ### 4-3. 배포
 
-- [ ] Vercel 배포
+- [x] 배포 가이드 문서 작성 (`docs/DEPLOY.md`)
+  - [x] 환경변수 설정 가이드
+  - [x] Vercel 배포 방법
+  - [x] Supabase 마이그레이션 실행 방법
+  - [x] 배포 후 확인사항
+  - [x] 문제 해결 가이드
+- [ ] Vercel 배포 (수동 작업 필요)
   - [ ] 환경변수 설정 확인
     - [ ] `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
     - [ ] `CLERK_SECRET_KEY`

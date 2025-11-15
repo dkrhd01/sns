@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { Home, Search, Plus, Heart, User } from "lucide-react";
+import { CreatePostModal } from "@/components/post/CreatePostModal";
 
 /**
  * @file BottomNav.tsx
@@ -17,6 +19,7 @@ import { Home, Search, Plus, Heart, User } from "lucide-react";
 export function BottomNav() {
   const pathname = usePathname();
   const { user } = useUser();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const navItems = [
     {
@@ -33,9 +36,10 @@ export function BottomNav() {
     },
     {
       icon: Plus,
-      href: "#", // 게시물 작성 모달은 2단계에서 구현
+      href: "#",
       active: false,
       label: "만들기",
+      onClick: () => setIsCreateModalOpen(true),
     },
     {
       icon: Heart,
@@ -52,35 +56,65 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[50px] bg-[var(--instagram-card-background)] border-t border-[var(--instagram-border)] z-50">
-      <div className="flex items-center justify-around h-full">
-        {navItems.map((item) => {
-          const Icon = item.icon;
+    <>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[50px] bg-[var(--instagram-card-background)] border-t border-[var(--instagram-border)] z-50">
+        <div className="flex items-center justify-around h-full">
+          {navItems.map((item) => {
+            const Icon = item.icon;
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`
-                flex items-center justify-center p-2 transition-colors
-                ${
-                  item.active
-                    ? "text-[var(--instagram-text-primary)]"
-                    : "text-[var(--instagram-text-secondary)]"
-                }
-              `}
-              aria-label={item.label}
-            >
-              <Icon
-                className={`w-6 h-6 ${
-                  item.active ? "stroke-[2.5]" : "stroke-2"
-                }`}
-              />
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
+            if (item.onClick) {
+              return (
+                <button
+                  key={item.href}
+                  onClick={item.onClick}
+                  className={`
+                    flex items-center justify-center p-2 transition-colors
+                    ${
+                      item.active
+                        ? "text-[var(--instagram-text-primary)]"
+                        : "text-[var(--instagram-text-secondary)]"
+                    }
+                  `}
+                  aria-label={item.label}
+                >
+                  <Icon
+                    className={`w-6 h-6 ${
+                      item.active ? "stroke-[2.5]" : "stroke-2"
+                    }`}
+                  />
+                </button>
+              );
+            }
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  flex items-center justify-center p-2 transition-colors
+                  ${
+                    item.active
+                      ? "text-[var(--instagram-text-primary)]"
+                      : "text-[var(--instagram-text-secondary)]"
+                  }
+                `}
+                aria-label={item.label}
+              >
+                <Icon
+                  className={`w-6 h-6 ${
+                    item.active ? "stroke-[2.5]" : "stroke-2"
+                  }`}
+                />
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+      <CreatePostModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
+    </>
   );
 }
 

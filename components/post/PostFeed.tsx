@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PostCard } from "./PostCard";
 import { PostCardSkeleton } from "./PostCardSkeleton";
 import type { PostWithDetails, CommentWithUser } from "@/lib/types";
@@ -16,38 +16,105 @@ interface PostWithComments extends PostWithDetails {
  * 게시물 목록을 표시하는 피드 컴포넌트
  * - 로딩 상태: Skeleton UI
  * - 빈 상태: 게시물 없을 때 UI
- * - 무한 스크롤: 2-4 단계에서 구현 예정
+ * - 무한 스크롤: Intersection Observer 사용
  */
 
-export function PostFeed() {
+interface PostFeedProps {
+  refreshTrigger?: number;
+}
+
+export function PostFeed({ refreshTrigger }: PostFeedProps = {}) {
   const [posts, setPosts] = useState<PostWithComments[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
+  const fetchPosts = async (pageNum: number, append: boolean = false) => {
+    try {
+      if (append) {
+        setLoadingMore(true);
+      } else {
         setLoading(true);
-        setError(null);
-
-        const response = await fetch("/api/posts?page=1&limit=10");
-        
-        if (!response.ok) {
-          throw new Error("게시물을 불러오는데 실패했습니다.");
-        }
-
-        const data = await response.json();
-        setPosts(data.posts);
-      } catch (err) {
-        console.error("PostFeed fetch error:", err);
-        setError(err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.");
-      } finally {
-        setLoading(false);
       }
+      setError(null);
+
+      let response: Response;
+      try {
+        response = await fetch(`/api/posts?page=${pageNum}&limit=10`);
+      } catch (networkError) {
+        // 네트워크 에러 처리
+        throw new Error("인터넷 연결을 확인해주세요.");
+      }
+      
+      if (!response.ok) {
+        // 에러 응답의 상세 정보 가져오기
+        let errorDetails = "게시물을 불러오는데 실패했습니다.";
+        try {
+          const errorData = await response.json();
+          console.error("API error response:", errorData);
+          errorDetails = errorData.details || errorData.error || errorDetails;
+        } catch {
+          // JSON 파싱 실패 시 기본 메시지 사용
+          const text = await response.text();
+          console.error("API error response (text):", text);
+        }
+        throw new Error(errorDetails);
+      }
+
+      const data = await response.json();
+      
+      if (append) {
+        setPosts((prev) => [...prev, ...(data.posts || [])]);
+      } else {
+        setPosts(data.posts || []);
+      }
+      
+      setHasMore(data.hasMore || false);
+    } catch (err) {
+      console.error("PostFeed fetch error:", err);
+      setError(err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  // Intersection Observer로 무한 스크롤 구현
+  useEffect(() => {
+    if (!hasMore || loadingMore || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          const nextPage = page + 1;
+          setPage(nextPage);
+          fetchPosts(nextPage, true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
     }
 
-    fetchPosts();
-  }, []);
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, loadingMore, loading, page]);
+
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    fetchPosts(1, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshTrigger]);
 
   if (loading) {
     return (
@@ -108,6 +175,24 @@ export function PostFeed() {
       {posts.map((post) => (
         <PostCard key={post.id} post={post} comments={post.previewComments || []} />
       ))}
+      
+      {/* 무한 스크롤 감지용 요소 */}
+      {hasMore && (
+        <div ref={observerTarget} className="h-20 flex items-center justify-center">
+          {loadingMore && (
+            <div className="space-y-4 w-full">
+              <PostCardSkeleton />
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* 더 이상 로드할 데이터가 없을 때 */}
+      {!hasMore && posts.length > 0 && (
+        <div className="text-center py-8 text-[var(--instagram-text-secondary)] text-sm">
+          모든 게시물을 불러왔습니다.
+        </div>
+      )}
     </div>
   );
 }
